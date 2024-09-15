@@ -5,49 +5,51 @@ import '../services/volume_service.dart';
 import 'dart:math' as math;
 
 class TimerProvider extends ChangeNotifier {
-  int _timerSeconds = 0;
-  int _timeSetFirst = 0;
+  int _remainingSeconds = 0;
+  int _totalSecondsFirstSet = 0;
   bool _isRunning = false;
   Timer? _timer;
   final VolumeService _volumeService;
 
   TimerProvider(this._volumeService);
 
-  int get timerMinutes => _timerSeconds ~/ 60;
-  int get timerSeconds => _timerSeconds % 60;
+  int get timerMinutes => _remainingSeconds ~/ 60;
+  int get timerSeconds => _remainingSeconds % 60;
+  int get timerSecondsFirstSet => _totalSecondsFirstSet;
+  int get remainingSeconds => _remainingSeconds;
   bool get isRunning => _isRunning;
 
   void incrementTimer() {
-    _timerSeconds += 60;
+    _remainingSeconds += 60;
     notifyListeners();
   }
 
   void decrementTimer() {
-    if (_timerSeconds > 60) {
-      _timerSeconds -= 60;
+    if (_remainingSeconds > 60) {
+      _remainingSeconds -= 60;
       notifyListeners();
     }
   }
 
   void startTimer() {
-    if (_isRunning || _timerSeconds == 0) return;
-    _timeSetFirst = _timerSeconds;
+    if (_isRunning || _remainingSeconds == 0) return;
+    _totalSecondsFirstSet = _remainingSeconds;
     _isRunning = true;
     notifyListeners();
 
-    int totalSeconds = _timerSeconds;
+    int totalSeconds = _remainingSeconds;
     int elapsedSeconds = 0;
 
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       elapsedSeconds++;
-      _timerSeconds--;
+      _remainingSeconds--;
       notifyListeners();
 
       double volumeFraction =
           _calculateVolumeFraction(elapsedSeconds, totalSeconds);
       _volumeService.adjustVolume(volumeFraction);
 
-      if (_timerSeconds <= 0) {
+      if (_remainingSeconds <= 0) {
         stopTimer();
         _volumeService.stopMusic();
       }
@@ -57,7 +59,7 @@ class TimerProvider extends ChangeNotifier {
   void stopTimer() {
     _timer?.cancel();
     _isRunning = false;
-    _timerSeconds = _timeSetFirst;
+    _remainingSeconds = _totalSecondsFirstSet;
     notifyListeners();
     _volumeService.resetVolume();
   }

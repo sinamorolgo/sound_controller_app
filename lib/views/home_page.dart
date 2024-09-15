@@ -1,8 +1,7 @@
-// lib/views/home_page.dart
-
 import 'package:flutter/material.dart';
 import 'widgets/timer_display.dart';
 import 'widgets/control_buttons.dart';
+import 'widgets/progress_bar.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -15,6 +14,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            ProgressBar(),
             TimerDisplay(),
             SizedBox(height: 20),
             ControlButtons(),

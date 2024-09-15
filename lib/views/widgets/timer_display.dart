@@ -14,7 +14,7 @@ class TimerDisplay extends StatelessWidget {
     String secondsStr = seconds.toString().padLeft(2, '0');
 
     return Text(
-      'Timer: $minutesStr:$secondsStr',
+      '$minutesStr:$secondsStr',
       style: TextStyle(fontSize: 24),
     );
   }
